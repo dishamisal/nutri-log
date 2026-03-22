@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NutriLog — Profile</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      padding: 48px 20px 100px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* ── Nav ── */
+    .nav {
+      width: 100%;
+      max-width: 600px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 40px;
+    }
+    .nav-wordmark {
+      font-family: var(--font-display);
+      font-size: 22px;
+      color: var(--text);
+      text-decoration: none;
+    }
+    .nav-links {
+      display: flex;
+      gap: 4px;
+    }
+    .nav-link {
+      font-size: 13px;
+      color: var(--text3);
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      transition: all 0.15s;
+    }
+    .nav-link:hover { color: var(--text); background: var(--surface2); }
+    .nav-link.active { color: var(--text); background: var(--surface2); }
+
+    /* ── Page title ── */
+    .page-title {
+      font-family: var(--font-display);
+      font-size: 26px;
+      margin-bottom: 6px;
+    }
+    .page-sub {
+      font-size: 13px;
+      color: var(--text3);
+      margin-bottom: 32px;
+      text-align: center;
+    }
+
+    /* ── Form ── */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+    .form-group { display: flex; flex-direction: column; }
+    .form-group.full { grid-column: 1 / -1; }
+
+    .form-group label {
+      font-size: 11px;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--text3);
+      margin-bottom: 6px;
+    }
+
+    .form-group input {
+      width: 100%;
+      background: var(--surface2);
+      border: 0.5px solid var(--border2);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 15px;
+      padding: 10px 12px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .form-group input:focus { border-color: rgba(255,255,255,0.22); }
+
+    /* ── Segmented controls ── */
+    .seg-group {
+      display: flex;
+      gap: 6px;
+    }
+    .seg-btn {
+      flex: 1;
+      background: var(--surface2);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text2);
+      font-family: var(--font-body);
+      font-size: 13px;
+      padding: 9px 8px;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-align: center;
+    }
+    .seg-btn:hover { border-color: var(--border2); color: var(--text); }
+    .seg-btn.selected {
+      background: var(--text);
+      color: var(--bg);
+      border-color: var(--text);
+    }
+
+    /* ── Results preview ── */
+    .results-preview {
+      margin-top: 24px;
+      display: none;
+    }
+    .results-preview.visible { display: block; }
+
+    .results-label {
+      font-size: 11px;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--text3);
+      margin-bottom: 10px;
+    }
+
+    .goals-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .goal-tile {
+      border: 0.5px solid var(--border2);
+      border-radius: var(--radius-md);
+      padding: 12px 10px;
+      text-align: center;
+    }
+    .goal-tile .gval {
+      font-size: 20px;
+      font-weight: 500;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .goal-tile .gunit {
+      font-size: 10px;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .bmr-row {
+      font-size: 12px;
+      color: var(--text3);
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .bmr-row span { color: var(--text2); }
+
+    .save-btn { margin-top: 4px; }
+
+    .success-box {
+      background: var(--green-dim);
+      border: 0.5px solid var(--green-border);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      font-size: 13px;
+      color: var(--green);
+      margin-top: 12px;
+      display: none;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Nav -->
+  <nav class="nav animate-fadeUp">
+    <a class="nav-wordmark" href="index.html">NutriLog</a>
+    <div class="nav-links">
+      <a class="nav-link" href="index.html">Today</a>
+      <a class="nav-link active" href="profile.html">Profile</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div style="text-align:center">
+      <div class="page-title animate-fadeUp">Your profile</div>
+      <div class="page-sub animate-fadeUp delay-1">We'll calculate your daily macro goals from this</div>
+    </div>
+
+    <div class="card animate-fadeUp delay-2">
+
+      <!-- Gender -->
+      <div class="form-group full" style="margin-bottom:14px">
+        <label>Gender</label>
+        <div class="seg-group" id="gender-group">
+          <div class="seg-btn selected" data-val="male"   onclick="selectSeg('gender-group', this)">Male</div>
+          <div class="seg-btn"          data-val="female" onclick="selectSeg('gender-group', this)">Female</div>
+        </div>
+      </div>
+
+      <!-- Age, Weight, Height -->
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Age (years)</label>
+          <input type="number" id="age" placeholder="25" min="10" max="100" oninput="recalc()" />
+        </div>
+        <div class="form-group">
+          <label>Weight (kg)</label>
+          <input type="number" id="weight" placeholder="70" min="30" max="300" oninput="recalc()" />
+        </div>
+        <div class="form-group full">
+          <label>Height (cm)</label>
+          <input type="number" id="height" placeholder="170" min="100" max="250" oninput="recalc()" />
+        </div>
+      </div>
+
+      <!-- Activity -->
+      <div class="form-group full" style="margin-bottom:14px">
+        <label>Activity level</label>
+        <div class="seg-group" id="activity-group" style="flex-wrap:wrap">
+          <div class="seg-btn selected" data-val="sedentary"   onclick="selectSeg('activity-group', this)">Sedentary</div>
+          <div class="seg-btn"          data-val="light"       onclick="selectSeg('activity-group', this)">Light</div>
+          <div class="seg-btn"          data-val="moderate"    onclick="selectSeg('activity-group', this)">Moderate</div>
+          <div class="seg-btn"          data-val="active"      onclick="selectSeg('activity-group', this)">Active</div>
+          <div class="seg-btn"          data-val="very_active" onclick="selectSeg('activity-group', this)">Very active</div>
+        </div>
+      </div>
+
+      <!-- Goal -->
+      <div class="form-group full" style="margin-bottom:0">
+        <label>Goal</label>
+        <div class="seg-group" id="goal-group">
+          <div class="seg-btn" data-val="lose"     onclick="selectSeg('goal-group', this)">Lose weight</div>
+          <div class="seg-btn selected" data-val="maintain" onclick="selectSeg('goal-group', this)">Maintain</div>
+          <div class="seg-btn" data-val="gain"     onclick="selectSeg('goal-group', this)">Gain muscle</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Results preview -->
+    <div class="results-preview" id="results-preview">
+      <div class="results-label">Your daily targets</div>
+
+      <div class="goals-grid">
+        <div class="goal-tile tile-green">
+          <div class="gval val-green" id="r-cal">—</div>
+          <div class="gunit">kcal</div>
+        </div>
+        <div class="goal-tile tile-blue">
+          <div class="gval val-blue" id="r-pro">—</div>
+          <div class="gunit">protein</div>
+        </div>
+        <div class="goal-tile tile-amber">
+          <div class="gval val-amber" id="r-carb">—</div>
+          <div class="gunit">carbs</div>
+        </div>
+        <div class="goal-tile tile-red">
+          <div class="gval val-red" id="r-fat">—</div>
+          <div class="gunit">fats</div>
+        </div>
+      </div>
+
+      <div class="bmr-row">
+        BMR <span id="r-bmr">—</span> kcal &nbsp;·&nbsp; TDEE <span id="r-tdee">—</span> kcal
+      </div>
+
+      <button class="btn btn-primary save-btn" onclick="saveAndGo()">
+        Save and go to today's log →
+      </button>
+      <div class="success-box" id="success-box">Profile saved! Redirecting...</div>
+    </div>
+
+  </div>
+
+<script type="module">
+  import { calcGoals, saveProfile, loadProfile } from "./profile.js";
+
+  /* ── Expose to inline onclick ── */
+  window.selectSeg = (groupId, el) => {
+    document.querySelectorAll(`#${groupId} .seg-btn`).forEach(b => b.classList.remove("selected"));
+    el.classList.add("selected");
+    recalc();
+  };
+
+  /* ── Get current form values ── */
+  function getProfile() {
+    const gender   = document.querySelector("#gender-group .selected")?.dataset.val;
+    const activity = document.querySelector("#activity-group .selected")?.dataset.val;
+    const goal     = document.querySelector("#goal-group .selected")?.dataset.val;
+    const age      = parseInt(document.getElementById("age").value);
+    const weight   = parseFloat(document.getElementById("weight").value);
+    const height   = parseFloat(document.getElementById("height").value);
+
+    if (!gender || !activity || !goal || !age || !weight || !height) return null;
+    return { gender, activity, goal, age, weight, height };
+  }
+
+  /* ── Recalculate on any input change ── */
+  window.recalc = () => {
+    const profile = getProfile();
+    if (!profile) return;
+
+    const goals = calcGoals(profile);
+    const preview = document.getElementById("results-preview");
+
+    document.getElementById("r-cal").textContent  = goals.calories;
+    document.getElementById("r-pro").textContent  = goals.protein_g + "g";
+    document.getElementById("r-carb").textContent = goals.carbs_g + "g";
+    document.getElementById("r-fat").textContent  = goals.fat_g + "g";
+    document.getElementById("r-bmr").textContent  = goals.bmr;
+    document.getElementById("r-tdee").textContent = goals.tdee;
+
+    preview.classList.add("visible");
+  };
+
+  /* ── Save and redirect ── */
+  window.saveAndGo = () => {
+    const profile = getProfile();
+    if (!profile) return;
+    saveProfile(profile);
+    document.getElementById("success-box").style.display = "block";
+    setTimeout(() => window.location.href = "index.html", 1200);
+  };
+
+  /* ── Load existing profile if present ── */
+  const existing = loadProfile();
+  if (existing) {
+    document.getElementById("age").value    = existing.age;
+    document.getElementById("weight").value = existing.weight;
+    document.getElementById("height").value = existing.height;
+
+    ["gender-group", "activity-group", "goal-group"].forEach(groupId => {
+      const key = groupId.replace("-group", "");
+      const val = existing[key === "gender" ? "gender" : key === "activity" ? "activity" : "goal"];
+      const btn = document.querySelector(`#${groupId} [data-val="${val}"]`);
+      if (btn) {
+        document.querySelectorAll(`#${groupId} .seg-btn`).forEach(b => b.classList.remove("selected"));
+        btn.classList.add("selected");
+      }
+    });
+
+    recalc();
+  }
+</script>
+</body>
+</html>

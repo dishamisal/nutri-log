@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NutriLog</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* ── Page layout ── */
+    body {
+      padding: 48px 20px 100px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* ── Header ── */
+    .wordmark {
+      font-family: var(--font-display);
+      font-size: 30px;
+      letter-spacing: -0.01em;
+      margin-bottom: 4px;
+    }
+    .tagline {
+      font-size: 12px;
+      color: var(--text3);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 40px;
+    }
+
+    /* ── Totals bar ── */
+    .totals-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .total-tile {
+      background: var(--surface);
+      border: 0.5px solid var(--border2);
+      border-radius: var(--radius-md);
+      padding: 12px 10px;
+      text-align: center;
+    }
+    .total-tile .val {
+      font-size: 20px;
+      font-weight: 500;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .total-tile .unit {
+      font-size: 10px;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .progress-bar {
+      height: 3px;
+      background: var(--border);
+      border-radius: 2px;
+      margin-top: 8px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      border-radius: 2px;
+      transition: width 0.4s ease;
+    }
+
+    /* ── Input card ── */
+    .input-card { margin-bottom: 16px; }
+    .example-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 10px 0 16px;
+    }
+    .chip {
+      font-size: 11px;
+      color: var(--text2);
+      background: var(--surface2);
+      border: 0.5px solid var(--border);
+      border-radius: 20px;
+      padding: 4px 10px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .chip:hover { border-color: var(--border2); color: var(--text); }
+
+    /* ── Meal log ── */
+    .section-label {
+      font-size: 11px;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--text3);
+      margin-bottom: 10px;
+    }
+    .empty-state {
+      text-align: center;
+      padding: 32px 0;
+      color: var(--text3);
+      font-size: 13px;
+    }
+    .meal-card {
+      background: var(--surface);
+      border: 0.5px solid var(--border2);
+      border-radius: var(--radius-md);
+      margin-bottom: 10px;
+      overflow: hidden;
+      animation: fadeUp 0.3s ease forwards;
+    }
+    .meal-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .meal-card-header:hover { background: var(--surface2); }
+    .meal-card-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+    }
+    .meal-card-meta {
+      font-size: 11px;
+      color: var(--text3);
+      margin-top: 2px;
+    }
+    .meal-card-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .meal-card-kcal {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--green);
+    }
+    .remove-btn {
+      background: none;
+      border: none;
+      color: var(--text3);
+      cursor: pointer;
+      font-size: 16px;
+      line-height: 1;
+      padding: 2px 4px;
+      transition: color 0.15s;
+    }
+    .remove-btn:hover { color: var(--red); }
+
+    /* ── Expandable items table ── */
+    .meal-items {
+      display: none;
+      border-top: 0.5px solid var(--border);
+    }
+    .meal-items.open { display: block; }
+    .items-head, .item-row {
+      display: grid;
+      grid-template-columns: 1fr 52px 52px 52px 52px;
+      gap: 6px;
+      padding: 8px 14px;
+      font-size: 12px;
+    }
+    .items-head {
+      color: var(--text3);
+      border-bottom: 0.5px solid var(--border);
+      letter-spacing: 0.04em;
+    }
+    .items-head span:not(:first-child),
+    .item-row .im { text-align: right; }
+    .item-row { border-bottom: 0.5px solid var(--border); }
+    .item-row:last-child { border-bottom: none; }
+    .item-row:hover { background: var(--surface2); }
+    .in { color: var(--text); }
+    .ip { font-size: 10px; color: var(--text3); margin-top: 1px; }
+    .im { color: var(--text2); }
+
+    /* ── Summary box ── */
+    .summary-card {
+      margin-top: 24px;
+      display: none;
+    }
+    .summary-card.visible { display: block; }
+    .summary-text {
+      font-size: 14px;
+      color: var(--text2);
+      line-height: 1.7;
+      margin-bottom: 14px;
+    }
+    .highlight-row {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+    .highlight {
+      font-size: 13px;
+      color: var(--text2);
+      padding: 8px 12px;
+      background: var(--surface2);
+      border-radius: var(--radius-sm);
+      border-left: 2px solid var(--border2);
+    }
+    .highlight:first-child { border-left-color: var(--green); }
+    .highlight:last-child  { border-left-color: var(--amber); }
+    .tip-box {
+      font-size: 13px;
+      color: var(--text2);
+      padding: 10px 12px;
+      background: var(--blue-dim);
+      border: 0.5px solid var(--blue-border);
+      border-radius: var(--radius-sm);
+    }
+    .tip-label {
+      font-size: 10px;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--blue);
+      margin-bottom: 4px;
+    }
+
+    /* ── Error ── */
+    .error-box {
+      background: var(--red-dim);
+      border: 0.5px solid var(--red-border);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      font-size: 13px;
+      color: var(--red);
+      margin-top: 12px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Nav -->
+  <nav class="nav animate-fadeUp">
+  <a class="nav-wordmark" href="index.html" style="font-family:var(--font-display);font-size:22px;color:var(--text);text-decoration:none">NutriLog</a>
+  <div class="nav-links" style="display:flex;gap:4px">
+      <a class="nav-link active" href="index.html" style="font-size:13px;color:var(--text);text-decoration:none;padding:6px 12px;border-radius:var(--radius-sm);background:var(--surface2)">Today</a>
+      <a class="nav-link" href="profile.html" style="font-size:13px;color:var(--text3);text-decoration:none;padding:6px 12px;border-radius:var(--radius-sm)">Profile</a>
+  </div>
+  </nav>  
+
+  <!-- Header -->
+  <div class="wordmark animate-fadeUp">NutriLog</div>
+  <div class="tagline animate-fadeUp delay-1">Track what you eat</div>
+
+  <div class="container">
+
+    <!-- Totals -->
+    <div class="totals-grid animate-fadeUp delay-2">
+      <div class="total-tile tile-green">
+        <div class="val val-green" id="t-cal">0</div>
+        <div class="unit">kcal</div>
+        <div class="progress-bar"><div class="progress-fill" id="p-cal" style="width:0%;background:var(--green)"></div></div>
+      </div>
+      <div class="total-tile tile-blue">
+        <div class="val val-blue" id="t-pro">0g</div>
+        <div class="unit">protein</div>
+        <div class="progress-bar"><div class="progress-fill" id="p-pro" style="width:0%;background:var(--blue)"></div></div>
+      </div>
+      <div class="total-tile tile-amber">
+        <div class="val val-amber" id="t-carb">0g</div>
+        <div class="unit">carbs</div>
+        <div class="progress-bar"><div class="progress-fill" id="p-carb" style="width:0%;background:var(--amber)"></div></div>
+      </div>
+      <div class="total-tile tile-red">
+        <div class="val val-red" id="t-fat">0g</div>
+        <div class="unit">fats</div>
+        <div class="progress-bar"><div class="progress-fill" id="p-fat" style="width:0%;background:var(--red)"></div></div>
+      </div>
+    </div>
+
+    <!-- Input -->
+    <div class="card input-card animate-fadeUp delay-3">
+      <label class="label" for="meal-input">What did you eat?</label>
+      <textarea id="meal-input" rows="3"
+        placeholder="e.g. 2 rotis with dal makhani, a cup of rice, and a glass of lassi"></textarea>
+
+      <div class="example-chips">
+        <div class="chip" onclick="fillExample(this)">2 rotis, paneer sabzi, chai</div>
+        <div class="chip" onclick="fillExample(this)">bowl of oatmeal, banana, black coffee</div>
+        <div class="chip" onclick="fillExample(this)">idli sambar, filter coffee</div>
+        <div class="chip" onclick="fillExample(this)">grilled chicken sandwich, coke</div>
+        <div class="chip" onclick="fillExample(this)">large pizza slice, diet coke</div>
+      </div>
+
+      <button class="btn btn-primary" id="log-btn">
+        <span class="spinner" id="spinner" style="display:none"></span>
+        <span id="btn-text">Log meal</span>
+      </button>
+      <div class="error-box" id="error-box"></div>
+    </div>
+
+    <!-- Meal log -->
+    <div class="section-label">Today's log</div>
+    <div id="meal-log">
+      <div class="empty-state" id="empty-state">No meals logged yet. Add your first one above.</div>
+    </div>
+
+    <!-- Day summary -->
+    <div class="card summary-card" id="summary-card">
+      <label class="label">Day summary</label>
+      <button class="btn btn-ghost" id="summary-btn" onclick="handleSummary()" style="margin-bottom:16px;width:100%">
+        <span class="spinner" id="summary-spinner" style="display:none"></span>
+        <span id="summary-btn-text">Get AI summary of my day</span>
+      </button>
+      <div id="summary-content" style="display:none">
+        <div class="summary-text" id="summary-text"></div>
+        <div class="highlight-row" id="highlight-row"></div>
+        <div class="tip-box">
+          <div class="tip-label">Next meal tip</div>
+          <div id="tip-text"></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /container -->
+
+<script type="module">
+  import { addMeal, removeMeal, getTotals, getProgress, getMeals, getSummary } from "./app.js";
+
+  /* ── Expose handlers to inline onclick ── */
+  window.fillExample = (el) => {
+    document.getElementById("meal-input").value = el.textContent.trim();
+  };
+
+  window.handleLog = async () => {
+    const input   = document.getElementById("meal-input");
+    const btn     = document.getElementById("log-btn");
+    const spinner = document.getElementById("spinner");
+    const btnText = document.getElementById("btn-text");
+    const errBox  = document.getElementById("error-box");
+    const text    = input.value.trim();
+
+    if (!text) return;
+
+    btn.disabled       = true;
+    spinner.style.display = "block";
+    btnText.textContent   = "Analyzing...";
+    errBox.style.display  = "none";
+
+    try {
+      const meal = await addMeal(text);
+      input.value = "";
+      renderMeal(meal);
+      updateTotals();
+      showSummaryButton();
+    } catch (e) {
+      errBox.textContent    = "Couldn't parse that meal. Try being a bit more specific.";
+      errBox.style.display  = "block";
+    } finally {
+      btn.disabled          = false;
+      spinner.style.display = "none";
+      btnText.textContent   = "Log meal";
+    }
+  };
+
+  window.handleRemove = (id) => {
+    removeMeal(id);
+    const el = document.getElementById("meal-" + id);
+    if (el) el.remove();
+    updateTotals();
+    if (getMeals().length === 0) {
+      document.getElementById("empty-state").style.display = "block";
+      document.getElementById("summary-card").classList.remove("visible");
+    }
+  };
+
+  window.toggleItems = (id) => {
+    const el = document.getElementById("items-" + id);
+    if (el) el.classList.toggle("open");
+  };
+
+  window.handleSummary = async () => {
+    const btn     = document.getElementById("summary-btn");
+    const spinner = document.getElementById("summary-spinner");
+    const btnText = document.getElementById("summary-btn-text");
+    const content = document.getElementById("summary-content");
+
+    btn.disabled          = true;
+    spinner.style.display = "block";
+    btnText.textContent   = "Thinking...";
+
+    try {
+      const data = await getSummary();
+
+      document.getElementById("summary-text").textContent = data.summary;
+      document.getElementById("tip-text").textContent     = data.tip;
+
+      const hr = document.getElementById("highlight-row");
+      hr.innerHTML = "";
+      data.highlights.forEach(h => {
+        const div = document.createElement("div");
+        div.className   = "highlight";
+        div.textContent = h;
+        hr.appendChild(div);
+      });
+
+      content.style.display = "block";
+      btn.style.display     = "none";
+    } catch (e) {
+      btnText.textContent = "Try again";
+      btn.disabled        = false;
+      spinner.style.display = "none";
+    }
+  };
+
+  /* ── Render a meal card ── */
+  function renderMeal(meal) {
+    document.getElementById("empty-state").style.display = "none";
+
+    const time = new Date(meal.logged_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+
+    const itemsHTML = meal.items.map(item => `
+      <div class="item-row">
+        <div><div class="in">${item.name}</div><div class="ip">${item.portion}</div></div>
+        <div class="im">${item.calories}</div>
+        <div class="im">${item.protein_g}g</div>
+        <div class="im">${item.carbs_g}g</div>
+        <div class="im">${item.fat_g}g</div>
+      </div>`).join("");
+
+    const card = document.createElement("div");
+    card.className = "meal-card";
+    card.id        = "meal-" + meal.id;
+    card.innerHTML = `
+      <div class="meal-card-header" onclick="toggleItems('${meal.id}')">
+        <div>
+          <div class="meal-card-title">${meal.meal_title}</div>
+          <div class="meal-card-meta">${time} · ${meal.total.protein_g}g protein · ${meal.total.carbs_g}g carbs · ${meal.total.fat_g}g fat</div>
+        </div>
+        <div class="meal-card-right">
+          <div class="meal-card-kcal">${meal.total.calories} kcal</div>
+          <button class="remove-btn" onclick="event.stopPropagation(); handleRemove('${meal.id}')" title="Remove">✕</button>
+        </div>
+      </div>
+      <div class="meal-items" id="items-${meal.id}">
+        <div class="items-head">
+          <span>Item</span><span>kcal</span><span>pro</span><span>carb</span><span>fat</span>
+        </div>
+        ${itemsHTML}
+      </div>`;
+
+    document.getElementById("meal-log").appendChild(card);
+  }
+
+  /* ── Update totals display ── */
+  function updateTotals() {
+    const t = getTotals();
+    const p = getProgress();
+
+    document.getElementById("t-cal").textContent  = t.calories;
+    document.getElementById("t-pro").textContent  = t.protein_g + "g";
+    document.getElementById("t-carb").textContent = t.carbs_g + "g";
+    document.getElementById("t-fat").textContent  = t.fat_g + "g";
+
+    document.getElementById("p-cal").style.width  = p.calories  + "%";
+    document.getElementById("p-pro").style.width  = p.protein_g + "%";
+    document.getElementById("p-carb").style.width = p.carbs_g   + "%";
+    document.getElementById("p-fat").style.width  = p.fat_g     + "%";
+  }
+
+  /* ── Show summary button once meals exist ── */
+  function showSummaryButton() {
+    document.getElementById("summary-card").classList.add("visible");
+    document.getElementById("summary-content").style.display = "none";
+    document.getElementById("summary-btn").style.display     = "block";
+    document.getElementById("summary-btn").disabled          = false;
+    document.getElementById("summary-btn-text").textContent  = "Get AI summary of my day";
+  }
+
+  /* ── Cmd/Ctrl+Enter to log ── */
+  document.getElementById("meal-input").addEventListener("keydown", e => {
+    if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) window.handleLog();
+  });
+  document.getElementById("log-btn").addEventListener("click", window.handleLog);
+</script>
+</body>
+</html>
