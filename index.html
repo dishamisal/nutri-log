@@ -8,7 +8,6 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
   <style>
-    /* ── Page layout ── */
     body {
       padding: 48px 20px 100px;
       display: flex;
@@ -16,22 +15,35 @@
       align-items: center;
     }
 
-    /* ── Header ── */
-    .wordmark {
-      font-family: var(--font-display);
-      font-size: 30px;
-      letter-spacing: -0.01em;
-      margin-bottom: 4px;
-    }
-    .tagline {
-      font-size: 12px;
-      color: var(--text3);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
+    .nav {
+      width: 100%;
+      max-width: 600px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       margin-bottom: 40px;
     }
+    .nav-wordmark {
+      font-family: var(--font-display);
+      font-size: 22px;
+      color: var(--text);
+      text-decoration: none;
+    }
+    .nav-links {
+      display: flex;
+      gap: 4px;
+    }
+    .nav-link {
+      font-size: 13px;
+      color: var(--text3);
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      transition: all 0.15s;
+    }
+    .nav-link:hover { color: var(--text); background: var(--surface2); }
+    .nav-link.active { color: var(--text); background: var(--surface2); }
 
-    /* ── Totals bar ── */
     .totals-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -70,7 +82,6 @@
       transition: width 0.4s ease;
     }
 
-    /* ── Input card ── */
     .input-card { margin-bottom: 16px; }
     .example-chips {
       display: flex;
@@ -90,7 +101,6 @@
     }
     .chip:hover { border-color: var(--border2); color: var(--text); }
 
-    /* ── Meal log ── */
     .section-label {
       font-size: 11px;
       letter-spacing: 0.07em;
@@ -153,7 +163,6 @@
     }
     .remove-btn:hover { color: var(--red); }
 
-    /* ── Expandable items table ── */
     .meal-items {
       display: none;
       border-top: 0.5px solid var(--border);
@@ -180,7 +189,6 @@
     .ip { font-size: 10px; color: var(--text3); margin-top: 1px; }
     .im { color: var(--text2); }
 
-    /* ── Summary box ── */
     .summary-card {
       margin-top: 24px;
       display: none;
@@ -224,7 +232,6 @@
       margin-bottom: 4px;
     }
 
-    /* ── Error ── */
     .error-box {
       background: var(--red-dim);
       border: 0.5px solid var(--red-border);
@@ -241,21 +248,17 @@
 
   <!-- Nav -->
   <nav class="nav animate-fadeUp">
-  <a class="nav-wordmark" href="index.html" style="font-family:var(--font-display);font-size:22px;color:var(--text);text-decoration:none">NutriLog</a>
-  <div class="nav-links" style="display:flex;gap:4px">
-      <a class="nav-link active" href="index.html" style="font-size:13px;color:var(--text);text-decoration:none;padding:6px 12px;border-radius:var(--radius-sm);background:var(--surface2)">Today</a>
-      <a class="nav-link" href="profile.html" style="font-size:13px;color:var(--text3);text-decoration:none;padding:6px 12px;border-radius:var(--radius-sm)">Profile</a>
-  </div>
-  </nav>  
-
-  <!-- Header -->
-  <div class="wordmark animate-fadeUp">NutriLog</div>
-  <div class="tagline animate-fadeUp delay-1">Track what you eat</div>
+    <a class="nav-wordmark" href="index.html">NutriLog</a>
+    <div class="nav-links">
+      <a class="nav-link active" href="index.html">Today</a>
+      <a class="nav-link" href="profile.html">Profile</a>
+    </div>
+  </nav>
 
   <div class="container">
 
     <!-- Totals -->
-    <div class="totals-grid animate-fadeUp delay-2">
+    <div class="totals-grid animate-fadeUp delay-1">
       <div class="total-tile tile-green">
         <div class="val val-green" id="t-cal">0</div>
         <div class="unit">kcal</div>
@@ -279,10 +282,21 @@
     </div>
 
     <!-- Input -->
-    <div class="card input-card animate-fadeUp delay-3">
-      <label class="label" for="meal-input">What did you eat?</label>
+    <div class="card input-card animate-fadeUp delay-2">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+        <label class="label" for="meal-input" style="margin-bottom:0">What did you eat?</label>
+        <button id="mic-btn" onclick="toggleMic()" title="Voice input" style="background:var(--surface2);border:0.5px solid var(--border2);border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s;flex-shrink:0;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text2)">
+            <rect x="9" y="2" width="6" height="12" rx="3"/>
+            <path d="M5 10a7 7 0 0 0 14 0"/>
+            <line x1="12" y1="19" x2="12" y2="22"/>
+            <line x1="8" y1="22" x2="16" y2="22"/>
+          </svg>
+        </button>
+      </div>
       <textarea id="meal-input" rows="3"
         placeholder="e.g. 2 rotis with dal makhani, a cup of rice, and a glass of lassi"></textarea>
+      <div id="mic-status" style="font-size:11px;color:var(--text3);margin-top:6px;min-height:16px;display:none">Listening...</div>
 
       <div class="example-chips">
         <div class="chip" onclick="fillExample(this)">2 rotis, paneer sabzi, chai</div>
@@ -308,7 +322,7 @@
     <!-- Day summary -->
     <div class="card summary-card" id="summary-card">
       <label class="label">Day summary</label>
-      <button class="btn btn-ghost" id="summary-btn" onclick="handleSummary()" style="margin-bottom:16px;width:100%">
+      <button class="btn btn-ghost" id="summary-btn" style="margin-bottom:16px;width:100%">
         <span class="spinner" id="summary-spinner" style="display:none"></span>
         <span id="summary-btn-text">Get AI summary of my day</span>
       </button>
@@ -322,12 +336,11 @@
       </div>
     </div>
 
-  </div><!-- /container -->
+  </div>
 
 <script type="module">
   import { addMeal, removeMeal, getTotals, getProgress, getMeals, getSummary } from "./app.js";
 
-  /* ── Expose handlers to inline onclick ── */
   window.fillExample = (el) => {
     document.getElementById("meal-input").value = el.textContent.trim();
   };
@@ -342,7 +355,7 @@
 
     if (!text) return;
 
-    btn.disabled       = true;
+    btn.disabled          = true;
     spinner.style.display = "block";
     btnText.textContent   = "Analyzing...";
     errBox.style.display  = "none";
@@ -354,8 +367,8 @@
       updateTotals();
       showSummaryButton();
     } catch (e) {
-      errBox.textContent    = "Couldn't parse that meal. Try being a bit more specific.";
-      errBox.style.display  = "block";
+      errBox.textContent   = "Couldn't parse that meal. Try being a bit more specific.";
+      errBox.style.display = "block";
     } finally {
       btn.disabled          = false;
       spinner.style.display = "none";
@@ -391,14 +404,13 @@
 
     try {
       const data = await getSummary();
-
       document.getElementById("summary-text").textContent = data.summary;
       document.getElementById("tip-text").textContent     = data.tip;
 
       const hr = document.getElementById("highlight-row");
       hr.innerHTML = "";
       data.highlights.forEach(h => {
-        const div = document.createElement("div");
+        const div       = document.createElement("div");
         div.className   = "highlight";
         div.textContent = h;
         hr.appendChild(div);
@@ -407,16 +419,14 @@
       content.style.display = "block";
       btn.style.display     = "none";
     } catch (e) {
-      btnText.textContent = "Try again";
-      btn.disabled        = false;
+      btnText.textContent   = "Try again";
+      btn.disabled          = false;
       spinner.style.display = "none";
     }
   };
 
-  /* ── Render a meal card ── */
   function renderMeal(meal) {
     document.getElementById("empty-state").style.display = "none";
-
     const time = new Date(meal.logged_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
     const itemsHTML = meal.items.map(item => `
@@ -428,7 +438,7 @@
         <div class="im">${item.fat_g}g</div>
       </div>`).join("");
 
-    const card = document.createElement("div");
+    const card     = document.createElement("div");
     card.className = "meal-card";
     card.id        = "meal-" + meal.id;
     card.innerHTML = `
@@ -452,7 +462,6 @@
     document.getElementById("meal-log").appendChild(card);
   }
 
-  /* ── Update totals display ── */
   function updateTotals() {
     const t = getTotals();
     const p = getProgress();
@@ -468,7 +477,6 @@
     document.getElementById("p-fat").style.width  = p.fat_g     + "%";
   }
 
-  /* ── Show summary button once meals exist ── */
   function showSummaryButton() {
     document.getElementById("summary-card").classList.add("visible");
     document.getElementById("summary-content").style.display = "none";
@@ -477,11 +485,72 @@
     document.getElementById("summary-btn-text").textContent  = "Get AI summary of my day";
   }
 
-  /* ── Cmd/Ctrl+Enter to log ── */
   document.getElementById("meal-input").addEventListener("keydown", e => {
     if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) window.handleLog();
   });
   document.getElementById("log-btn").addEventListener("click", window.handleLog);
+  document.getElementById("summary-btn").addEventListener("click", window.handleSummary);
+
+  /* ── Voice input ── */
+  let recognition = null;
+  let isListening = false;
+
+  window.toggleMic = () => {
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+      alert("Voice input is only supported in Chrome. Please use Chrome for this feature.");
+      return;
+    }
+
+    if (isListening) {
+      recognition.stop();
+      return;
+    }
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    recognition             = new SpeechRecognition();
+    recognition.lang           = "en-US";
+    recognition.continuous     = false;
+    recognition.interimResults = true;
+
+    const micBtn    = document.getElementById("mic-btn");
+    const micStatus = document.getElementById("mic-status");
+    const input     = document.getElementById("meal-input");
+
+    recognition.onstart = () => {
+      isListening              = true;
+      micBtn.style.background  = "var(--red-dim)";
+      micBtn.style.borderColor = "var(--red-border)";
+      micStatus.style.display  = "block";
+      micStatus.textContent    = "Listening...";
+      micStatus.style.color    = "var(--red)";
+    };
+
+    recognition.onresult = (e) => {
+      const transcript = Array.from(e.results)
+        .map(r => r[0].transcript)
+        .join("");
+      input.value           = transcript;
+      micStatus.textContent = "Got it — hit Log meal or keep speaking";
+      micStatus.style.color = "var(--green)";
+    };
+
+    recognition.onend = () => {
+      isListening              = false;
+      micBtn.style.background  = "var(--surface2)";
+      micBtn.style.borderColor = "var(--border2)";
+      setTimeout(() => { micStatus.style.display = "none"; }, 2000);
+    };
+
+    recognition.onerror = () => {
+      isListening              = false;
+      micBtn.style.background  = "var(--surface2)";
+      micBtn.style.borderColor = "var(--border2)";
+      micStatus.textContent    = "Microphone error — please try again";
+      micStatus.style.color    = "var(--text3)";
+    };
+
+    recognition.start();
+  };
 </script>
 </body>
 </html>
