@@ -37,7 +37,26 @@ async function callGroq(prompt) {
     throw new Error("No JSON found in response");
   }
 
-  return raw.slice(start, end + 1);
+  return extractJSON(raw);
+}
+
+function extractJSON(raw) {
+  try {
+    return JSON.parse(raw); // best case
+  } catch {}
+
+  const match = raw.match(/\{[\s\S]*\}/);
+  if (!match) {
+    console.error("No JSON found in response:", raw);
+    throw new Error("No JSON found in response");
+  }
+
+  try {
+    return JSON.parse(match[0]);
+  } catch (e) {
+    console.error("Invalid JSON extracted:", match[0]);
+    throw e;
+  }
 }
 
 /* ── parseMeal(text) ── */
@@ -77,9 +96,10 @@ Rules:
 Meal description: "${text}"`;
 
   try {
-    const raw    = await callGroq(prompt);
-    const parsed = JSON.parse(raw);
-    return parsed;
+    // const raw    = await callGroq(prompt);
+    // const parsed = JSON.parse(raw);
+    // return parsed;
+    return await callGroq(prompt);
   } catch (e) {
     console.error("parseMeal error:", e);
     throw e;
