@@ -29,34 +29,41 @@ async function callGroq(prompt) {
 
   console.log("Raw API response:", raw);
 
-  const start = raw.indexOf("{");
-  const end   = raw.lastIndexOf("}");
-
-  if (start === -1 || end === -1) {
-    console.error("No JSON found in response:", raw);
-    throw new Error("No JSON found in response");
-  }
-
   return extractJSON(raw);
 }
 
 function extractJSON(raw) {
+  // remove markdown fences if present
+  raw = raw.replace(/```json|```/g, "").trim();
+
+  // try direct parse first
   try {
-    return JSON.parse(raw); // best case
+    return JSON.parse(raw);
   } catch {}
 
-  const match = raw.match(/\{[\s\S]*\}/);
-  if (!match) {
-    console.error("No JSON found in response:", raw);
-    throw new Error("No JSON found in response");
+  // brace matching (robust extraction)
+  let start = raw.indexOf("{");
+  if (start === -1) {
+    console.error("No JSON found:", raw);
+    throw new Error("No JSON found");
   }
 
-  try {
-    return JSON.parse(match[0]);
-  } catch (e) {
-    console.error("Invalid JSON extracted:", match[0]);
-    throw e;
+  let depth = 0;
+
+  for (let i = start; i < raw.length; i++) {
+    if (raw[i] === "{") depth++;
+    if (raw[i] === "}") depth--;
+
+    if (depth === 0) {
+      const candidate = raw.slice(start, i + 1);
+      try {
+        return JSON.parse(candidate);
+      } catch {}
+    }
   }
+
+  console.error("Failed to extract valid JSON:", raw);
+  throw new Error("Invalid JSON response");
 }
 
 /* ── parseMeal(text) ── */
@@ -126,9 +133,10 @@ Return ONLY a valid JSON object — no markdown, no explanation.
 }`;
 
   try {
-    const raw    = await callGroq(prompt);
-    const parsed = JSON.parse(raw);
-    return parsed;
+    // const raw    = await callGroq(prompt);
+    // const parsed = JSON.parse(raw);
+    // return parsed;
+    return await callGroq(prompt);
   } catch (e) {
     console.error("getDailySummary error:", e);
     throw e;
